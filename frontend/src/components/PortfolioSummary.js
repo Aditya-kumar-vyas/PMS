@@ -1,54 +1,41 @@
-import React from "react";
+// src/components/PortfolioSummary.js
+import React from 'react';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { formatCurrency } from '../utils/formatters';
 
-const PortfolioSummary = ({ data }) => {
-  const { grossValue, netValue, absoluteReturn, incomeReceived } = data;
+export default function PortfolioSummary({ data }) {
+  const { grossValue, netValue, absoluteReturn, twr, mwr, incomeReceived } = data;
+
+  const MetricCard = ({ title, value, isPercentage, isNegativeRed }) => {
+    const formattedValue = isPercentage ? `${value}%` : `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const isNegative = parseFloat(value) < 0;
+    const textColor = isNegativeRed && isNegative ? 'text-red-500' : 'text-green-500';
+
+    return (
+      <div className="bg-white rounded-lg p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-500">{title}</p>
+          {isNegativeRed && (
+            isNegative ? 
+              <ArrowDownRight className="w-4 h-4 text-red-500" /> : 
+              <ArrowUpRight className="w-4 h-4 text-green-500" />
+          )}
+        </div>
+        <p className={`text-xl font-bold mt-2 ${isNegativeRed ? textColor : 'text-gray-900'}`}>
+          {formattedValue}
+        </p>
+      </div>
+    );
+  };
 
   return (
-    <div className="bg-white p-6 shadow-lg rounded-md">
-      <h2 className="text-lg font-bold text-gray-700 mb-4">Portfolio Summary</h2>
-      <div className="flex space-x-8">
-        {/* Gross Value */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Gross Value</p>
-          <h3 className="text-xl font-semibold text-accent">
-            ${grossValue.toFixed(2)}
-          </h3>
-        </div>
-
-        {/* Net Value */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Net Value</p>
-          <h3
-            className={`text-xl font-semibold ${
-              netValue >= 0 ? "text-accent" : "text-red-600"
-            }`}
-          >
-            ${netValue.toFixed(2)}
-          </h3>
-        </div>
-
-        {/* Absolute Return */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Absolute Return</p>
-          <h3
-            className={`text-xl font-semibold ${
-              absoluteReturn >= 0 ? "text-accent" : "text-red-600"
-            }`}
-          >
-            ${absoluteReturn.toFixed(2)}
-          </h3>
-        </div>
-
-        {/* Income Received */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Income Received</p>
-          <h3 className="text-xl font-semibold text-accent">
-            ${incomeReceived.toFixed(2)}
-          </h3>
-        </div>
-      </div>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <MetricCard title="Gross Value" value={ formatCurrency(grossValue)} isNegativeRed />
+      <MetricCard title="Net Value" value={formatCurrency(netValue) } isNegativeRed />
+      <MetricCard title="Absolute Return" value={formatCurrency(absoluteReturn) } isNegativeRed />
+      <MetricCard title="TWR" value={twr} isPercentage isNegativeRed />
+      <MetricCard title="MWR" value={mwr} isPercentage isNegativeRed />
+      <MetricCard title="Income Received" value={formatCurrency(incomeReceived) } />
     </div>
   );
-};
-
-export default PortfolioSummary;
+}

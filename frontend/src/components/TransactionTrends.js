@@ -1,51 +1,44 @@
-import React from "react";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+// components/TransactionTrends.js
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { formatCurrency } from '../utils/formatters';
 
-
-const TransactionTrends = ({ data }) => {
-    const chartData = {
-      labels: data.map((item) => item.date),  // Use 'date' for the x-axis labels
-      datasets: [
-        {
-          label: "Transaction Amount",
-          data: data.map((item) => item.value),  // Use 'value' for the bar heights
-          backgroundColor: "#3B82F6", // Blue
-          borderWidth: 1,
-        },
-      ],
-    };
-  
-    const options = {
-        responsive: true,
-        aspectRatio: 1.5,  // This will make sure the chart has a proper aspect ratio
-        plugins: {
-          legend: { display: false },
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { autoSkip: true, maxTicksLimit: 6 },
-          },
-          y: {
-            grid: { borderDash: [5] },
-            beginAtZero: true,
-            ticks: { precision: 0 },
-          },
-        },
-      };
-      
-
-      
-  
-    return (
-      <div className="bg-white p-6 shadow-lg rounded-md">
-        <h2 className="text-lg font-bold text-gray-700 mb-4">Transaction Trends</h2>
-        <Bar data={chartData} options={options} />
+export default function TransactionTrends({ data }) {
+  return (
+    <div className="bg-white rounded-lg p-6 shadow-sm">
+      <h2 className="text-lg font-semibold mb-4">Transaction History</h2>
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart 
+            data={data}
+            margin={{ top: 20, right: 30, left: 15, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="date"
+              tickFormatter={date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+              }}
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis 
+              tickFormatter={value => `$${formatCurrency(value)}`}
+              tick={{ fontSize: 12 }}
+              width={60}
+            />
+            <Tooltip
+              formatter={value => [`$${formatCurrency(value)}`, 'Amount']}
+              labelFormatter={date => new Date(date).toLocaleDateString('en-US', { 
+                month: 'long',
+                year: 'numeric',
+                day: 'numeric'
+              })}
+            />
+            <Bar dataKey="value" fill="#2563eb" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
-    );
-  };
-  
-
-export default TransactionTrends;
+    </div>
+  );
+}

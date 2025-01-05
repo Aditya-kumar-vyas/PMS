@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from datetime import datetime
 
 # MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://kumarankit0327:ankitvyas@pms.8c4ho.mongodb.net/")
 db = client["financial_dashboard"]
 
 # Provided transactions data
